@@ -1,18 +1,14 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const db = mysql.createConnection({
-    host: 'localhost',          // Cambia según tu configuración
+const db = mysql.createPool({
+    host: 'localhost',
     user: 'Inventario',
     password: 'inventario',
     database: 'baseinventario',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
 });
-
-db.connect(err => {
-    if (err) {
-        console.error('Error al conectar a la base de datos:', err);
-        process.exit(1); // Detiene la aplicación si la conexión falla
-    }
-    console.log('Conexión a la base de datos establecida');
-});
+console.log("Se ha conectado a la base de datos")
 
 module.exports = db;
