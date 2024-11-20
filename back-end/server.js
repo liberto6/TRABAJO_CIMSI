@@ -37,6 +37,7 @@ const empleadoRoutes = require('./routes/empleado'); // Importar la ruta de empl
 app.use('/empleado', empleadoRoutes); // Registrar la ruta de empleado
 
 
+
 // Escucha en el puerto
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
