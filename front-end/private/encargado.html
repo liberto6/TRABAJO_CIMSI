@@ -1,15 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vista Encargado</title>
+    <title>PDA - Encargado: Cargando...</title> <!-- Título dinámico -->
+    <link rel="stylesheet" href="/css/stylesEncargados.css"> <!-- Ruta al CSS -->
 </head>
 <body>
-    <h1>Bienvenido, Encargado</h1>
-    <p>Aquí puedes gestionar el inventario y los usuarios.</p>
-
-    <!-- Botón para gestionar usuarios -->
-    <button onclick="window.location.href='/encargado/gestion_empleado.html'">Gestionar Empleados</button>
+    <header>
+        <h1 id="tituloPagina">PDA - Encargado</h1> <!-- Título fuera de la tarjeta -->
+        <button id="cerrarSesion" class="boton-salida">Cerrar Sesión</button> <!-- Botón fuera de la tarjeta -->
+    </header>
+    <div class="container">
+        <main>
+            <section id="menu">
+                <button id="nuevoPedido">Nuevo Pedido</button>
+                <button id="verPedidos">Ver Pedidos</button>
+                <button id="gestionarEmpleados">Gestionar Empleados</button>
+                
+            </section>
+            <section id="contenido">
+                <p>Selecciona una opción para comenzar.</p>
+            </section>
+        </main>
+    </div>
+    <script src="/js/encargado.js"></script> <!-- Ruta al JavaScript -->
 </body>
 </html>
