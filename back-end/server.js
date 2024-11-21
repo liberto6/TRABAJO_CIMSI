@@ -27,6 +27,7 @@ app.get('/', (req, res) => {
 });
 
 
+
 const encargadoRoutes = require('./routes/encargado'); // Importar la ruta de encargado
 // Rutas
 app.use('/encargado', encargadoRoutes); // Registrar la ruta de encargado

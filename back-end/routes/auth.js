@@ -18,7 +18,13 @@ router.post('/login', async (req, res) => {
         }
 
         const user = results[0];
-        req.session.user = { id: user.id_usuario, email: user.email, role: user.rol };
+        req.session.user = { 
+            id: user.id_usuario, 
+            nombre: user.nombre, // Agregamos `nombre` a la sesión
+            email: user.email, 
+            role: user.rol 
+        };
+        console.log(req.session.user); // Para verificar qué datos se almacenan en la sesión
         res.json({ message: 'Login exitoso', role: user.rol });
     } catch (err) {
         console.error('Error en la consulta:', err);
