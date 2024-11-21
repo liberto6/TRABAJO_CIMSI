@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const cerrarSesionBtn = document.getElementById("cerrarSesion");
     const nuevoPedidoBtn = document.getElementById("nuevoPedido");
     const contenido = document.getElementById("contenido");
+    const verPedidosBtn = document.getElementById("verPedidos");
 
     // Obtener el nombre del empleado
     try {
@@ -19,86 +20,60 @@ document.addEventListener("DOMContentLoaded", async () => {
         tituloPagina.textContent = "PDA - Empleado: Error";
     }
 
-    // Mostrar "Nuevo Pedido"
-    nuevoPedidoBtn.addEventListener("click", async () => {
-        try {
-            const productosResponse = await fetch('/empleado/productos');
-            const productos = await productosResponse.json();
+    // Mostrar "Ver Pedidos" con filtro de fecha
+    verPedidosBtn.addEventListener("click", async () => {
+        contenido.innerHTML = `
+            <h3>Ver Pedidos</h3>
+            <label for="fechaPedido">Selecciona una fecha:</label>
+            <input type="date" id="fechaPedido">
+            <button id="filtrarPedidos">Filtrar</button>
+            <div id="resultadosPedidos">
+                <p>Selecciona una fecha para ver los pedidos.</p>
+            </div>
+        `;
 
-            contenido.innerHTML = `
-                <h3>Nuevo Pedido</h3>
-                <div id="productos">
-                    ${productos
-                        .map(
-                            (producto) =>
-                                `<button class="producto" data-id="${producto.id}" data-nombre="${producto.nombre}" data-precio="${producto.precio}">
-                                    ${producto.nombre} - €${parseFloat(producto.precio).toFixed(2)}
-                                </button>`
-                        )
-                        .join("")}
-                </div>
-                <div id="comanda">
-                    <h4>Comanda</h4>
-                    <ul id="comandaLista"></ul>
-                    <button id="finalizarPedido">Finalizar Pedido</button>
-                </div>
-            `;
+        const filtrarPedidosBtn = document.getElementById("filtrarPedidos");
+        const fechaPedidoInput = document.getElementById("fechaPedido");
+        const resultadosPedidos = document.getElementById("resultadosPedidos");
 
-            const botonesProducto = document.querySelectorAll(".producto");
-            const comandaLista = document.getElementById("comandaLista");
-            const finalizarPedidoBtn = document.getElementById("finalizarPedido");
+        filtrarPedidosBtn.addEventListener("click", async () => {
+            const fechaSeleccionada = fechaPedidoInput.value;
 
-            // Agregar productos a la comanda
-            botonesProducto.forEach((boton) => {
-                boton.addEventListener("click", () => {
-                    const nombre = boton.dataset.nombre;
-                    const precio = parseFloat(boton.dataset.precio);
+            if (!fechaSeleccionada) {
+                resultadosPedidos.innerHTML = "<p>Por favor selecciona una fecha válida.</p>";
+                return;
+            }
 
-                    if (!isNaN(precio)) {
-                        const listItem = document.createElement("li");
-                        listItem.textContent = `${nombre} - €${precio.toFixed(2)}`;
-                        comandaLista.appendChild(listItem);
+            try {
+                const response = await fetch(`/empleado/ver-pedidos?fecha=${fechaSeleccionada}`);
+                const pedidos = await response.json();
+
+                if (response.ok) {
+                    if (pedidos.length > 0) {
+                        resultadosPedidos.innerHTML = `
+                            <ul>
+                                ${pedidos
+                                    .map((pedido) => {
+                                        const total = parseFloat(pedido.total) || 0; // Convierte a número y maneja valores nulos
+                                        return `
+                                            <li>
+                                                Pedido ID: ${pedido.id}, Fecha: ${pedido.fecha}, Total: €${total.toFixed(2)}
+                                            </li>
+                                        `;
+                                    })
+                                    .join("")}
+                            </ul>
+                        `;
                     } else {
-                        console.error("Precio no válido para el producto:", nombre);
-                    }
-                });
-            });
-
-            // Procesar pedido
-            finalizarPedidoBtn.addEventListener("click", async () => {
-                const items = Array.from(comandaLista.children).map((item) => {
-                    const [nombre] = item.textContent.split(" - €");
-                    const producto = productos.find((p) => p.nombre === nombre);
-                    return { id: producto.id, cantidad: 1 }; // Asume cantidad = 1
-                });
-
-                if (items.length > 0) {
-                    try {
-                        const response = await fetch('/empleado/procesar-pedido', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ productos: items }),
-                        });
-
-                        if (response.ok) {
-                            const result = await response.json();
-                            alert(`Pedido procesado correctamente. ID: ${result.pedidoId}`);
-                            contenido.innerHTML = "<p>Pedido enviado correctamente.</p>";
-                        } else {
-                            const error = await response.json();
-                            alert(`Error al procesar el pedido: ${error.message}`);
-                        }
-                    } catch (error) {
-                        console.error("Error al procesar el pedido:", error);
-                        alert("Error al procesar el pedido.");
+                        resultadosPedidos.innerHTML = "<p>No hay pedidos registrados para la fecha seleccionada.</p>";
                     }
                 } else {
-                    alert("No hay productos en la comanda.");
+                    resultadosPedidos.innerHTML = `<p>Error al obtener los pedidos: ${pedidos.message}</p>`;
                 }
-            });
-        } catch (error) {
-            console.error("Error al obtener productos:", error);
-            contenido.innerHTML = "<p>Error al cargar los productos.</p>";
-        }
+            } catch (error) {
+                console.error("Error al realizar la solicitud de pedidos:", error);
+                resultadosPedidos.innerHTML = "<p>Error al cargar los pedidos.</p>";
+            }
+        });
     });
 });

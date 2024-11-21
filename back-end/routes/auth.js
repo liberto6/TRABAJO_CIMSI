@@ -60,5 +60,19 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ message: 'Error en el servidor.' });
     }
 });
+router.post('/logout', (req, res) => {
+    if (req.session.user) {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error al cerrar sesión:', err);
+                return res.status(500).json({ message: 'Error al cerrar sesión.' });
+            }
+            res.clearCookie('connect.sid'); // Elimina la cookie de sesión
+            res.json({ message: 'Sesión cerrada correctamente.' });
+        });
+    } else {
+        res.status(400).json({ message: 'No hay sesión activa.' });
+    }
+});
 
 module.exports = router;

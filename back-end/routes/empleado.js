@@ -112,5 +112,62 @@ router.post('/procesar-pedido', async (req, res) => {
     }
 });
 
+router.get('/ver-pedidos', isAuthenticated, async (req, res) => {
+    const { fecha } = req.query;
+
+    if (!fecha) {
+        return res.status(400).json({ message: 'La fecha es requerida.' });
+    }
+
+    try {
+        // Consulta para obtener los pedidos por fecha
+        const [pedidos] = await db.execute(
+            `SELECT p.id AS pedido_id, p.fecha, p.total, dp.producto_id, pr.nombre AS producto_nombre, dp.cantidad, dp.subtotal 
+            FROM pedidos p
+            INNER JOIN detalles_pedidos dp ON p.id = dp.pedido_id
+            INNER JOIN productos pr ON dp.producto_id = pr.id
+            WHERE DATE(p.fecha) = ?`,
+            [fecha]
+        );
+
+        if (!pedidos || pedidos.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron pedidos para la fecha seleccionada.' });
+        }
+
+        // Agrupamos los pedidos por ID para estructurarlos mejor
+        const pedidosAgrupados = pedidos.reduce((acc, pedido) => {
+            const { pedido_id, fecha, total, producto_id, producto_nombre, cantidad, subtotal } = pedido;
+
+            if (!acc[pedido_id]) {
+                acc[pedido_id] = {
+                    id: pedido_id,
+                    fecha,
+                    total,
+                    productos: [],
+                };
+            }
+
+            acc[pedido_id].productos.push({
+                id: producto_id,
+                nombre: producto_nombre,
+                cantidad,
+                subtotal,
+            });
+
+            return acc;
+        }, {});
+
+        // Convertimos el objeto agrupado en un array
+        const pedidosArray = Object.values(pedidosAgrupados);
+
+        res.json(pedidosArray);
+    } catch (error) {
+        console.error('Error al obtener los pedidos:', error);
+        res.status(500).json({ message: 'Error al obtener los pedidos.' });
+    }
+});
+
+
+
 
 module.exports = router;
