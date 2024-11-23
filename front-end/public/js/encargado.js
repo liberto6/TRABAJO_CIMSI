@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Obtener el nombre del encargado
     try {
-        const response = await fetch('/encargado/nombre'); // Asegúrate de que esta ruta existe en el backend
+        const response = await fetch('/encargado/nombre');
         const data = await response.json();
 
         if (response.ok) {
@@ -20,11 +20,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("Error al obtener el nombre del encargado:", error);
         tituloPagina.textContent = "PDA - Encargado: Error";
     }
-    
 
     // Redirigir a la página de gestión de empleados
     gestionarEmpleadosBtn.addEventListener("click", () => {
-        window.location.href = "/encargado/gestion_empleado.html"; // Asegúrate de que la ruta es correcta
+        window.location.href = "/encargado/gestion_empleado.html";
     });
 
     // Lógica para cerrar sesión
@@ -32,12 +31,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const response = await fetch('/auth/logout', {
                 method: 'POST',
-                credentials: 'include', // Incluye las cookies en la solicitud
+                credentials: 'include',
             });
 
             if (response.ok) {
                 alert("Sesión cerrada correctamente.");
-                window.location.href = '/'; // Redirige al login
+                window.location.href = '/';
             } else {
                 alert("Error al cerrar sesión.");
             }
@@ -46,11 +45,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("Error al cerrar sesión.");
         }
     });
+
     nuevoPedidoBtn.addEventListener("click", async () => {
         try {
             const productosResponse = await fetch('/encargado/productos');
             const productos = await productosResponse.json();
-    
+
             contenido.innerHTML = `
                 <h3>Nuevo Pedido</h3>
                 <div id="productos">
@@ -69,33 +69,45 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <button id="finalizarPedido">Finalizar Pedido</button>
                 </div>
             `;
-    
+
             const botonesProducto = document.querySelectorAll(".producto");
             const comandaLista = document.getElementById("comandaLista");
             const finalizarPedidoBtn = document.getElementById("finalizarPedido");
-    
+
+            // Lógica para añadir productos a la comanda con opción de eliminar
             botonesProducto.forEach((boton) => {
                 boton.addEventListener("click", () => {
                     const nombre = boton.dataset.nombre;
                     const precio = parseFloat(boton.dataset.precio);
-    
+
                     if (!isNaN(precio)) {
                         const listItem = document.createElement("li");
                         listItem.textContent = `${nombre} - €${precio.toFixed(2)}`;
+
+                        // Botón para quitar el producto
+                        const removeButton = document.createElement("button");
+                        removeButton.textContent = "Quitar";
+                        removeButton.style.marginLeft = "10px";
+
+                        removeButton.addEventListener("click", () => {
+                            listItem.remove();
+                        });
+
+                        listItem.appendChild(removeButton);
                         comandaLista.appendChild(listItem);
                     } else {
                         console.error("Precio no válido para el producto:", nombre);
                     }
                 });
             });
-    
+
             finalizarPedidoBtn.addEventListener("click", async () => {
                 const items = Array.from(comandaLista.children).map((item) => {
                     const [nombre] = item.textContent.split(" - €");
                     const producto = productos.find((p) => p.nombre === nombre);
                     return { id: producto.id, cantidad: 1 };
                 });
-    
+
                 if (items.length > 0) {
                     try {
                         const response = await fetch('/encargado/procesar-pedido', {
@@ -103,7 +115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ productos: items }),
                         });
-    
+
                         if (response.ok) {
                             const result = await response.json();
                             alert(`Pedido procesado correctamente. ID: ${result.pedidoId}`);
@@ -125,6 +137,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             contenido.innerHTML = "<p>Error al cargar los productos.</p>";
         }
     });
+
     verPedidosBtn.addEventListener("click", async () => {
         contenido.innerHTML = `
             <h3>Ver Pedidos</h3>
@@ -135,23 +148,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <p>Selecciona una fecha para ver los pedidos.</p>
             </div>
         `;
-    
+
         const filtrarPedidosBtn = document.getElementById("filtrarPedidos");
         const fechaPedidoInput = document.getElementById("fechaPedido");
         const resultadosPedidos = document.getElementById("resultadosPedidos");
-    
+
         filtrarPedidosBtn.addEventListener("click", async () => {
             const fechaSeleccionada = fechaPedidoInput.value;
-    
+
             if (!fechaSeleccionada) {
                 resultadosPedidos.innerHTML = "<p>Por favor selecciona una fecha válida.</p>";
                 return;
             }
-    
+
             try {
                 const response = await fetch(`/encargado/ver-pedidos?fecha=${fechaSeleccionada}`);
                 const pedidos = await response.json();
-    
+
                 if (response.ok) {
                     if (pedidos.length > 0) {
                         resultadosPedidos.innerHTML = `
@@ -180,9 +193,4 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     });
-
-    
-    
-        
-
 });

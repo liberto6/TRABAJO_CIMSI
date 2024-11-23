@@ -46,20 +46,35 @@ document.addEventListener("DOMContentLoaded", async () => {
             const botonesProducto = document.querySelectorAll(".producto");
             const comandaLista = document.getElementById("comandaLista");
             const finalizarPedidoBtn = document.getElementById("finalizarPedido");
-            // Agregar productos a la comanda
+
+            // Agregar productos a la comanda con opción de eliminar
             botonesProducto.forEach((boton) => {
                 boton.addEventListener("click", () => {
                     const nombre = boton.dataset.nombre;
                     const precio = parseFloat(boton.dataset.precio);
+
                     if (!isNaN(precio)) {
                         const listItem = document.createElement("li");
                         listItem.textContent = `${nombre} - €${precio.toFixed(2)}`;
+
+                        // Agregar botón para quitar producto
+                        const removeButton = document.createElement("button");
+                        removeButton.textContent = "Quitar";
+                        removeButton.style.marginLeft = "10px";
+
+                        // Evento para quitar producto de la comanda
+                        removeButton.addEventListener("click", () => {
+                            listItem.remove();
+                        });
+
+                        listItem.appendChild(removeButton);
                         comandaLista.appendChild(listItem);
                     } else {
                         console.error("Precio no válido para el producto:", nombre);
                     }
                 });
             });
+
             // Procesar pedido
             finalizarPedidoBtn.addEventListener("click", async () => {
                 const items = Array.from(comandaLista.children).map((item) => {
@@ -95,7 +110,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             contenido.innerHTML = "<p>Error al cargar los productos.</p>";
         }
     });
-    
 
     // Mostrar "Ver Pedidos" con filtro de fecha
     verPedidosBtn.addEventListener("click", async () => {
@@ -131,7 +145,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             <ul>
                                 ${pedidos
                                     .map((pedido) => {
-                                        const total = parseFloat(pedido.total) || 0; // Convierte a número y maneja valores nulos
+                                        const total = parseFloat(pedido.total) || 0;
                                         return `
                                             <li>
                                                 Pedido ID: ${pedido.id}, Fecha: ${pedido.fecha}, Total: €${total.toFixed(2)}
@@ -153,17 +167,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     });
+
     cerrarSesionBtn.addEventListener("click", async () => {
         try {
-            // Enviar la solicitud de cierre de sesión al servidor
             const response = await fetch('/auth/logout', {
                 method: 'POST',
-                credentials: 'include', // Incluye las cookies en la solicitud
+                credentials: 'include',
             });
-    
+
             if (response.ok) {
                 alert("Sesión cerrada correctamente.");
-                window.location.href = '/'; // Redirige al usuario a la página de inicio de sesión
+                window.location.href = '/';
             } else {
                 alert("Error al cerrar sesión. Por favor, intenta de nuevo.");
             }
@@ -172,5 +186,4 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("Error al cerrar sesión. Por favor, verifica tu conexión e inténtalo de nuevo.");
         }
     });
-    
 });
