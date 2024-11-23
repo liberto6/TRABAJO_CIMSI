@@ -136,77 +136,83 @@ router.get('/ver-pedidos', isAuthenticated, async (req, res) => {
     }
 });
 
-router.post('/procesar-pedido', isAuthenticated, async (req, res) => {
-    const { productos } = req.body;
+// Ruta para procesar un pedido
+router.post('/procesar-pedido', async (req, res) => {
+    const { productos } = req.body; // Array con productos y cantidades [{ id, cantidad }]
 
     if (!productos || productos.length === 0) {
-        return res.status(400).json({ message: 'No hay productos en el pedido' });
+        return res.status(400).json({ message: 'No se proporcionaron productos para procesar.' });
     }
 
-    try {
-        // Iniciar una transacción
-        await db.query('START TRANSACTION');
+    const connection = await db.getConnection(); // Obtener conexión para transacción
 
-        // Crear el pedido
-        const [pedidoResult] = await db.query('INSERT INTO pedidos (fecha, total) VALUES (NOW(), 0)');
-        const pedidoId = pedidoResult.insertId;
+    try {
+        await connection.beginTransaction(); // Inicia transacción
 
         let totalPedido = 0;
 
+        // Calcular el total del pedido y verificar stock
+        for (const producto of productos) {
+            const [recetas] = await connection.query(
+                `SELECT r.ingrediente_id, r.cantidad, i.stock 
+                 FROM recetas r
+                 INNER JOIN ingredientes i ON r.ingrediente_id = i.id
+                 WHERE r.producto_id = ?`,
+                [producto.id]
+            );
+
+            for (const receta of recetas) {
+                const nuevoStock = receta.stock - receta.cantidad * producto.cantidad;
+
+                if (nuevoStock < 0) {
+                    throw new Error(`Stock insuficiente para el ingrediente ID ${receta.ingrediente_id}`);
+                }
+
+                await connection.query(
+                    `UPDATE ingredientes SET stock = ? WHERE id = ?`,
+                    [nuevoStock, receta.ingrediente_id]
+                );
+            }
+
+            const [productoInfo] = await connection.query(
+                `SELECT precio FROM productos WHERE id = ?`,
+                [producto.id]
+            );
+
+            totalPedido += productoInfo[0].precio * producto.cantidad;
+        }
+
+        // Crear el pedido en la tabla `pedidos` y obtener el ID generado
+        const [pedidoResult] = await connection.query(
+            `INSERT INTO pedidos (fecha, total) VALUES (NOW(), ?)`,
+            [totalPedido]
+        );
+
+        const pedidoId = pedidoResult.insertId;
+
         // Insertar los detalles del pedido
         for (const producto of productos) {
-            const [productoData] = await db.query('SELECT precio FROM productos WHERE id = ?', [producto.id]);
-            const precio = productoData[0].precio;
-            const subtotal = precio * producto.cantidad;
+            const [productoInfo] = await connection.query(
+                `SELECT precio FROM productos WHERE id = ?`,
+                [producto.id]
+            );
 
-            totalPedido += subtotal;
-
-            await db.query(
-                'INSERT INTO detalles_pedidos (pedido_id, producto_id, cantidad, subtotal) VALUES (?, ?, ?, ?)',
-                [pedidoId, producto.id, producto.cantidad, subtotal]
+            await connection.query(
+                `INSERT INTO detalles_pedidos (pedido_id, producto_id, cantidad, subtotal) VALUES (?, ?, ?, ?)`,
+                [pedidoId, producto.id, producto.cantidad, productoInfo[0].precio * producto.cantidad]
             );
         }
 
-        // Actualizar el total del pedido
-        await db.query('UPDATE pedidos SET total = ? WHERE id = ?', [totalPedido, pedidoId]);
+        await connection.commit(); // Confirmar la transacción
 
-        // Confirmar la transacción
-        await db.query('COMMIT');
-
-        res.json({ message: 'Pedido procesado con éxito', pedidoId });
-    } catch (err) {
-        // Revertir la transacción en caso de error
-        await db.query('ROLLBACK');
-        console.error('Error al procesar el pedido:', err);
-        res.status(500).json({ message: 'Error al procesar el pedido' });
-    }
-});
-
-router.post('/actualizar-stock-minimo', isAuthenticated, async (req, res) => {
-    const { ingredienteId, stockMinimo } = req.body;
-
-    // Validar los datos
-    if (!ingredienteId || stockMinimo === undefined) {
-        return res.status(400).json({ message: 'Faltan datos requeridos.' });
-    }
-
-    try {
-        // Actualizar el stock mínimo en la base de datos
-        const [resultado] = await db.query(
-            'UPDATE ingredientes SET stock_minimo = ? WHERE id = ?',
-            [stockMinimo, ingredienteId]
-        );
-
-        if (resultado.affectedRows === 0) {
-            return res.status(404).json({ message: 'Ingrediente no encontrado.' });
-        }
-
-        res.json({ message: 'Stock mínimo actualizado correctamente.' });
+        res.status(200).json({ message: 'Pedido procesado correctamente.', pedidoId });
     } catch (error) {
-        console.error('Error al actualizar el stock mínimo:', error);
-        res.status(500).json({ message: 'Error al actualizar el stock mínimo.' });
+        console.error('Error al procesar el pedido:', error);
+        await connection.rollback(); // Revertir transacción en caso de error
+        res.status(500).json({ message: 'Error al procesar el pedido.' });
+    } finally {
+        connection.release(); // Liberar la conexión
     }
 });
-
 
 module.exports = router;
