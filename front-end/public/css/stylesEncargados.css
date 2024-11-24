@@ -166,4 +166,13 @@ header {
 #finalizarPedido:hover {
     background-color: #0056b3;
 }
+.alerta {
+    background-color: #f8d7da; /* Fondo rojo claro */
+    color: #721c24;           /* Texto rojo oscuro */
+    padding: 15px;
+    margin-top: 10px;
+    border: 1px solid #f5c6cb; /* Borde rojo claro */
+    border-radius: 5px;
+    font-size: 14px;
+}
 

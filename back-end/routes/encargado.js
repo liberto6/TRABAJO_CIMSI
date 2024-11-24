@@ -215,4 +215,19 @@ router.post('/procesar-pedido', async (req, res) => {
     }
 });
 
+router.get('/stock-bajo', isAuthenticated, async (req, res) => {
+    try {
+        const [ingredientes] = await db.query(`
+            SELECT id, nombre, stock, stock_minimo 
+            FROM ingredientes 
+            WHERE stock <= stock_minimo
+        `);
+
+        res.json(ingredientes);
+    } catch (error) {
+        console.error('Error al obtener ingredientes con stock bajo:', error);
+        res.status(500).json({ message: 'Error al consultar el stock bajo.' });
+    }
+});
+
 module.exports = router;

@@ -21,6 +21,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         tituloPagina.textContent = "PDA - Encargado: Error";
     }
 
+  // Verificar ingredientes con stock bajo
+try {
+    const response = await fetch('/encargado/stock-bajo'); // Nueva ruta para consultar stock bajo
+    const ingredientes = await response.json();
+
+    const alertaStock = document.getElementById("alertaStock");
+
+    if (ingredientes.length > 0) {
+        const alerta = ingredientes
+            .map(
+                (ingrediente) =>
+                    `<p>Ingrediente: <strong>${ingrediente.nombre}</strong>, Stock: ${ingrediente.stock}, Stock mínimo: ${ingrediente.stock_minimo}</p>`
+            )
+            .join("");
+
+        alertaStock.innerHTML = `
+            <div>
+                <h4>ALERTA DE STOCK BAJO:</h4>
+                ${alerta}
+            </div>
+        `;
+        alertaStock.style.display = "block"; // Asegúrate de que sea visible
+    } else {
+        alertaStock.innerHTML = "<p>Todos los ingredientes están en niveles adecuados de stock.</p>";
+        alertaStock.style.display = "block";
+    }
+} catch (error) {
+    console.error("Error al verificar el stock bajo:", error);
+    const alertaStock = document.getElementById("alertaStock");
+    alertaStock.innerHTML = "<p>Error al cargar los datos de stock.</p>";
+    alertaStock.style.display = "block";
+}/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     // Redirigir a la página de gestión de empleados
     gestionarEmpleadosBtn.addEventListener("click", () => {
         window.location.href = "/encargado/gestion_empleado.html";
