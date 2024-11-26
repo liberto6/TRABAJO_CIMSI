@@ -5,9 +5,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('addEmployeeForm').addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const nombre = document.getElementById('nombre').value;
-        const email = document.getElementById('email').value;
-        const contraseña = document.getElementById('contraseña').value;
+        const nombre = document.getElementById('nombre').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const contraseña = document.getElementById('contraseña').value.trim();
+
+        if (!nombre || !email || !contraseña) {
+            alert('Todos los campos son obligatorios.');
+            return;
+        }
 
         try {
             const response = await fetch('/encargado/empleados', {
@@ -22,7 +27,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 cargarEmpleados(); // Recargar la tabla
                 document.getElementById('addEmployeeForm').reset();
             } else {
-                throw new Error('Error al añadir el empleado');
+                const errorData = await response.json();
+                alert(`Error al añadir el empleado: ${errorData.message || 'Desconocido'}`);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -34,12 +40,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Función para cargar los empleados y llenar la tabla
 async function cargarEmpleados() {
     try {
-        const response = await fetch('/encargado/empleados');
+        const response = await fetch('/encargado/empleados', {
+            credentials: 'include',
+        });
         if (!response.ok) throw new Error('Error al cargar los empleados');
 
         const empleados = await response.json();
         const tableBody = document.querySelector('#employeeTable tbody');
         tableBody.innerHTML = ''; // Limpiar la tabla
+
+        if (empleados.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4">No hay empleados registrados</td></tr>';
+            return;
+        }
 
         empleados.forEach((empleado) => {
             const row = document.createElement('tr');
@@ -54,26 +67,31 @@ async function cargarEmpleados() {
             tableBody.appendChild(row);
         });
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error al cargar los empleados:', error);
+        const tableBody = document.querySelector('#employeeTable tbody');
+        tableBody.innerHTML = '<tr><td colspan="4">Error al cargar los empleados</td></tr>';
     }
 }
 
 // Función para eliminar un empleado
 async function eliminarEmpleado(id) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este empleado?')) return;
+
     try {
         const response = await fetch(`/encargado/empleados/${id}`, {
             method: 'DELETE',
-            credentials: 'include', // esto hay que ponerlo para que el backend tenga devuelta las cookies y asi verificar que estas logueado
+            credentials: 'include',
         });
 
         if (response.ok) {
             alert('Empleado eliminado con éxito');
             cargarEmpleados(); // Recargar la tabla
         } else {
-            throw new Error('Error al eliminar el empleado');
+            const errorData = await response.json();
+            alert(`Error al eliminar el empleado: ${errorData.message || 'Desconocido'}`);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error al eliminar el empleado:', error);
         alert('No se pudo eliminar el empleado');
     }
 }

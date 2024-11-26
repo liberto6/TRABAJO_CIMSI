@@ -10,15 +10,34 @@
     <div class="container">
         <h1>Registrarse</h1>
         <form id="registerForm">
-            <label for="nombre">Nombre:</label>
+            <!-- Datos del usuario -->
+            <label for="nombre">Nombre del Usuario:</label>
             <input type="text" id="nombre" name="nombre" required>
             <br>
-            <label for="email">Correo:</label>
+            <label for="email">Correo del Usuario:</label>
             <input type="email" id="email" name="email" required>
             <br>
             <label for="contraseña">Contraseña:</label>
             <input type="password" id="contraseña" name="contraseña" required>
             <br>
+            
+            <!-- Datos del restaurante -->
+            <h2>Información del Restaurante</h2>
+            <label for="restaurante">Nombre del Restaurante:</label>
+            <input type="text" id="restaurante" name="restaurante" required>
+            <br>
+            <label for="emailRestaurante">Correo del Restaurante:</label>
+            <input type="email" id="emailRestaurante" name="emailRestaurante" required>
+            <br>
+            <label for="telefonoRestaurante">Número de Teléfono del Restaurante:</label>
+            <input type="tel" id="telefonoRestaurante" name="telefonoRestaurante" pattern="[0-9]{9}" required>
+            <small>Debe contener 9 dígitos.</small>
+            <br>
+            <label for="direccionRestaurante">Dirección del Restaurante:</label>
+            <input type="text" id="direccionRestaurante" name="direccionRestaurante" required>
+            <br>
+
+            <!-- Botón de envío -->
             <button type="submit">Registrar</button>
         </form>
         <p id="registerErrorMessage" class="error-message"></p>

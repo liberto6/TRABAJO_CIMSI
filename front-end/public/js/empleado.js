@@ -25,13 +25,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const productosResponse = await fetch('/empleado/productos');
             const productos = await productosResponse.json();
+
+            if (!productosResponse.ok) {
+                throw new Error(productos.message || "Error al cargar productos.");
+            }
+
             contenido.innerHTML = `
                 <h3>Nuevo Pedido</h3>
                 <div id="productos">
                     ${productos
                         .map(
                             (producto) =>
-                                `<button class="producto" data-id="${producto.id}" data-nombre="${producto.nombre}" data-precio="${producto.precio}">
+                                `<button class="producto" data-id="${producto.id_producto}" data-nombre="${producto.nombre}" data-precio="${producto.precio}">
                                     ${producto.nombre} - €${parseFloat(producto.precio).toFixed(2)}
                                 </button>`
                         )
@@ -80,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const items = Array.from(comandaLista.children).map((item) => {
                     const [nombre] = item.textContent.split(" - €");
                     const producto = productos.find((p) => p.nombre === nombre);
-                    return { id: producto.id, cantidad: 1 }; // Asume cantidad = 1
+                    return { id_producto: producto.id_producto, cantidad: 1 }; // Cambiado a `id_producto`
                 });
                 if (items.length > 0) {
                     try {
@@ -148,7 +153,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                         const total = parseFloat(pedido.total) || 0;
                                         return `
                                             <li>
-                                                Pedido ID: ${pedido.id}, Fecha: ${pedido.fecha}, Total: €${total.toFixed(2)}
+                                                Pedido ID: ${pedido.pedido_id}, Fecha: ${pedido.fecha}, Total: €${total.toFixed(2)}
                                             </li>
                                         `;
                                     })
@@ -168,6 +173,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
+    // Cerrar sesión
     cerrarSesionBtn.addEventListener("click", async () => {
         try {
             const response = await fetch('/auth/logout', {

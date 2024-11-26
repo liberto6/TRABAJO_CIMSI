@@ -21,38 +21,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         tituloPagina.textContent = "PDA - Encargado: Error";
     }
 
-  // Verificar ingredientes con stock bajo
-try {
-    const response = await fetch('/encargado/stock-bajo'); // Nueva ruta para consultar stock bajo
-    const ingredientes = await response.json();
+    // Verificar ingredientes con stock bajo
+    try {
+        const response = await fetch('/encargado/stock-bajo');
+        const ingredientes = await response.json();
 
-    const alertaStock = document.getElementById("alertaStock");
+        const alertaStock = document.getElementById("alertaStock");
 
-    if (ingredientes.length > 0) {
-        const alerta = ingredientes
-            .map(
-                (ingrediente) =>
-                    `<p>Ingrediente: <strong>${ingrediente.nombre}</strong>, Stock: ${ingrediente.stock}, Stock mínimo: ${ingrediente.stock_minimo}</p>`
-            )
-            .join("");
+        if (ingredientes.length > 0) {
+            const alerta = ingredientes
+                .map(
+                    (ingrediente) =>
+                        `<p>Ingrediente: <strong>${ingrediente.nombre}</strong>, Stock: ${ingrediente.stock}, Stock mínimo: ${ingrediente.stock_minimo}</p>`
+                )
+                .join("");
 
-        alertaStock.innerHTML = `
-            <div>
-                <h4>ALERTA DE STOCK BAJO:</h4>
-                ${alerta}
-            </div>
-        `;
-        alertaStock.style.display = "block"; // Asegúrate de que sea visible
-    } else {
-        alertaStock.innerHTML = "<p>Todos los ingredientes están en niveles adecuados de stock.</p>";
+            alertaStock.innerHTML = `
+                <div>
+                    <h4>ALERTA DE STOCK BAJO:</h4>
+                    ${alerta}
+                </div>
+            `;
+            alertaStock.style.display = "block";
+        } else {
+            alertaStock.innerHTML = "<p>Todos los ingredientes están en niveles adecuados de stock.</p>";
+            alertaStock.style.display = "block";
+        }
+    } catch (error) {
+        console.error("Error al verificar el stock bajo:", error);
+        const alertaStock = document.getElementById("alertaStock");
+        alertaStock.innerHTML = "<p>Error al cargar los datos de stock.</p>";
         alertaStock.style.display = "block";
     }
-} catch (error) {
-    console.error("Error al verificar el stock bajo:", error);
-    const alertaStock = document.getElementById("alertaStock");
-    alertaStock.innerHTML = "<p>Error al cargar los datos de stock.</p>";
-    alertaStock.style.display = "block";
-}/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Redirigir a la página de gestión de empleados
     gestionarEmpleadosBtn.addEventListener("click", () => {
@@ -79,10 +79,15 @@ try {
         }
     });
 
+    // Mostrar "Nuevo Pedido"
     nuevoPedidoBtn.addEventListener("click", async () => {
         try {
             const productosResponse = await fetch('/encargado/productos');
             const productos = await productosResponse.json();
+
+            if (!productosResponse.ok) {
+                throw new Error(productos.message || "Error al cargar productos.");
+            }
 
             contenido.innerHTML = `
                 <h3>Nuevo Pedido</h3>
@@ -107,7 +112,7 @@ try {
             const comandaLista = document.getElementById("comandaLista");
             const finalizarPedidoBtn = document.getElementById("finalizarPedido");
 
-            // Lógica para añadir productos a la comanda con opción de eliminar
+            // Lógica para añadir productos a la comanda
             botonesProducto.forEach((boton) => {
                 boton.addEventListener("click", () => {
                     const nombre = boton.dataset.nombre;
@@ -117,7 +122,6 @@ try {
                         const listItem = document.createElement("li");
                         listItem.textContent = `${nombre} - €${precio.toFixed(2)}`;
 
-                        // Botón para quitar el producto
                         const removeButton = document.createElement("button");
                         removeButton.textContent = "Quitar";
                         removeButton.style.marginLeft = "10px";
@@ -138,7 +142,7 @@ try {
                 const items = Array.from(comandaLista.children).map((item) => {
                     const [nombre] = item.textContent.split(" - €");
                     const producto = productos.find((p) => p.nombre === nombre);
-                    return { id: producto.id, cantidad: 1 };
+                    return { id_producto: producto.id, cantidad: 1 }; // Cambio aquí: id_producto
                 });
 
                 if (items.length > 0) {
@@ -171,6 +175,7 @@ try {
         }
     });
 
+    // Mostrar "Ver Pedidos"
     verPedidosBtn.addEventListener("click", async () => {
         contenido.innerHTML = `
             <h3>Ver Pedidos</h3>
@@ -207,7 +212,7 @@ try {
                                         const total = parseFloat(pedido.total) || 0;
                                         return `
                                             <li>
-                                                Pedido ID: ${pedido.id}, Fecha: ${pedido.fecha}, Total: €${total.toFixed(2)}
+                                                Pedido ID: ${pedido.pedido_id}, Fecha: ${pedido.fecha}, Total: €${total.toFixed(2)}
                                             </li>
                                         `;
                                     })

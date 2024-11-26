@@ -10,7 +10,12 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const query = 'SELECT * FROM usuarios WHERE email = ? AND contraseña = ?';
+        const query = `
+            SELECT u.id_usuario, u.nombre, u.email, u.rol, u.id_restaurante, r.nombre AS nombre_restaurante
+            FROM usuarios u
+            INNER JOIN restaurantes r ON u.id_restaurante = r.id_restaurante
+            WHERE u.email = ? AND u.contraseña = ?
+        `;
         const [results] = await db.query(query, [email, contraseña]);
 
         if (results.length === 0) {
@@ -19,12 +24,14 @@ router.post('/login', async (req, res) => {
 
         const user = results[0];
         req.session.user = { 
-            id: user.id_usuario, 
-            nombre: user.nombre, // Agregamos `nombre` a la sesión
-            email: user.email, 
-            role: user.rol 
+            id_usuario: user.id_usuario,
+            nombre: user.nombre,
+            email: user.email,
+            role: user.rol,
+            id_restaurante: user.id_restaurante,
+            nombre_restaurante: user.nombre_restaurante,
         };
-        console.log(req.session.user); // Para verificar qué datos se almacenan en la sesión
+
         res.json({ message: 'Login exitoso', role: user.rol });
     } catch (err) {
         console.error('Error en la consulta:', err);
@@ -32,34 +39,61 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/register', async (req, res) => {
-    const { nombre, email, contraseña } = req.body;
 
-    if (!nombre || !email || !contraseña) {
+router.post('/register', async (req, res) => {
+    const { nombre, email, contraseña, restaurante, emailRestaurante, telefonoRestaurante, direccionRestaurante } = req.body;
+
+    // Validación de campos obligatorios
+    if (!nombre || !email || !contraseña || !restaurante || !emailRestaurante || !telefonoRestaurante || !direccionRestaurante) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
     try {
-        // Verificar si el email ya está registrado
-        const emailCheckQuery = 'SELECT email FROM usuarios WHERE email = ?';
-        const [emailResult] = await db.query(emailCheckQuery, [email]);
+        // Verificar si el restaurante ya existe
+        const [restauranteExistente] = await db.query(
+            'SELECT id_restaurante FROM restaurantes WHERE nombre = ?',
+            [restaurante]
+        );
 
-        if (emailResult.length > 0) {
+        let idRestaurante;
+        if (restauranteExistente.length > 0) {
+            // Si el restaurante existe, usar su ID
+            idRestaurante = restauranteExistente[0].id_restaurante;
+
+            // Actualizar información del restaurante existente
+            await db.query(
+                'UPDATE restaurantes SET email = ?, telefono = ?, direccion = ? WHERE id_restaurante = ?',
+                [emailRestaurante, telefonoRestaurante, direccionRestaurante, idRestaurante]
+            );
+        } else {
+            // Si no existe, crear el restaurante con la información proporcionada
+            const [nuevoRestaurante] = await db.query(
+                'INSERT INTO restaurantes (nombre, email, telefono, direccion) VALUES (?, ?, ?, ?)',
+                [restaurante, emailRestaurante, telefonoRestaurante, direccionRestaurante]
+            );
+            idRestaurante = nuevoRestaurante.insertId;
+        }
+
+        // Verificar si el email del usuario ya está registrado
+        const [usuarioExistente] = await db.query('SELECT email FROM usuarios WHERE email = ?', [email]);
+        if (usuarioExistente.length > 0) {
             return res.status(400).json({ message: 'El correo ya está registrado.' });
         }
 
-        // Insertar el nuevo usuario
-        const insertQuery = 'INSERT INTO usuarios (nombre, email, contraseña, rol) VALUES (?, ?, ?, ?)';
-        const values = [nombre, email, contraseña, 'empleado']; // Rol por defecto: empleado
+        // Crear el usuario como encargado del restaurante
+        await db.query(
+            'INSERT INTO usuarios (nombre, email, contraseña, rol, id_restaurante) VALUES (?, ?, ?, "encargado", ?)',
+            [nombre, email, contraseña, idRestaurante]
+        );
 
-        await db.query(insertQuery, values);
-
-        res.status(201).json({ message: 'Usuario registrado con éxito.' });
-    } catch (err) {
-        console.error('Error al registrar el usuario:', err);
-        res.status(500).json({ message: 'Error en el servidor.' });
+        res.status(201).json({ message: 'Usuario registrado exitosamente.' });
+    } catch (error) {
+        console.error('Error al registrar usuario:', error);
+        res.status(500).json({ message: 'Error al registrar el usuario.' });
     }
 });
+
+
 router.post('/logout', (req, res) => {
     if (req.session.user) {
         req.session.destroy((err) => {
