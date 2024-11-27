@@ -176,3 +176,65 @@ header {
     font-size: 14px;
 }
 
+form {
+    width: 100%; /* Asegurar que use todo el ancho disponible */
+    max-width: 400px; /* Ancho máximo para mantener el diseño limpio */
+    margin: auto; /* Centrar el formulario */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaciado entre secciones del formulario */
+}
+
+
+form input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+form button {
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #218838;
+}
+
+.ingrediente {
+    display: flex;
+    flex-direction: column; /* Cambiar a disposición vertical */
+    gap: 5px; /* Espaciado entre los campos */
+    align-items: flex-start; /* Alinear al inicio del contenedor */
+    margin-bottom: 10px; /* Espaciado inferior entre los ingredientes */
+}
+
+.ingrediente button {
+    align-self: flex-end; /* Alinear al final */
+    background-color: #28a745; /* Color verde */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ingrediente button:hover {
+    background-color: #218838;
+}
+#listaIngredientes {
+    display: flex;
+    flex-direction: column; /* Alinear los ingredientes uno debajo del otro */
+    gap: 10px; /* Espaciado entre ingredientes */
+    width: 100%; /* Usar todo el ancho del contenedor */
+}
