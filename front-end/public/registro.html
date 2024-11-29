@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,40 +8,49 @@
 </head>
 <body>
     <div class="container">
-        <h1>Registrarse</h1>
-        <form id="registerForm">
-            <!-- Datos del usuario -->
-            <label for="nombre">Nombre del Usuario:</label>
-            <input type="text" id="nombre" name="nombre" required>
-            <br>
-            <label for="email">Correo del Usuario:</label>
-            <input type="email" id="email" name="email" required>
-            <br>
-            <label for="contraseña">Contraseña:</label>
-            <input type="password" id="contraseña" name="contraseña" required>
-            <br>
-            
-            <!-- Datos del restaurante -->
-            <h2>Información del Restaurante</h2>
-            <label for="restaurante">Nombre del Restaurante:</label>
-            <input type="text" id="restaurante" name="restaurante" required>
-            <br>
-            <label for="emailRestaurante">Correo del Restaurante:</label>
-            <input type="email" id="emailRestaurante" name="emailRestaurante" required>
-            <br>
-            <label for="telefonoRestaurante">Número de Teléfono del Restaurante:</label>
-            <input type="tel" id="telefonoRestaurante" name="telefonoRestaurante" pattern="[0-9]{9}" required>
-            <small>Debe contener 9 dígitos.</small>
-            <br>
-            <label for="direccionRestaurante">Dirección del Restaurante:</label>
-            <input type="text" id="direccionRestaurante" name="direccionRestaurante" required>
-            <br>
+        <div class="split">
+            <!-- Primera tarjeta: Datos del usuario -->
+            <div class="card">
+                <h2>Datos del Usuario</h2>
+                <form id="registerForm">
+                    <label for="nombre">Nombre del Usuario:</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre completo" required>
+                    
+                    <label for="email">Correo del Usuario:</label>
+                    <input type="email" id="email" name="email" placeholder="usuario@correo.com" required>
+                    
+                    <label for="contraseña">Contraseña:</label>
+                    <input type="password" id="contraseña" name="contraseña" placeholder="********" required>
+                </form>
+            </div>
 
-            <!-- Botón de envío -->
-            <button type="submit">Registrar</button>
-        </form>
-        <p id="registerErrorMessage" class="error-message"></p>
+            <!-- Segunda tarjeta: Información del restaurante -->
+            <div class="card">
+                <h2>Información del Restaurante</h2>
+                <form>
+                    <label for="restaurante">Nombre del Restaurante:</label>
+                    <input type="text" id="restaurante" name="restaurante" placeholder="Nombre del restaurante" required>
+                    
+                    <label for="emailRestaurante">Correo del Restaurante:</label>
+                    <input type="email" id="emailRestaurante" name="emailRestaurante" placeholder="restaurante@correo.com" required>
+                    
+                    <label for="telefonoRestaurante">Número de Teléfono del Restaurante:</label>
+                    <input type="tel" id="telefonoRestaurante" name="telefonoRestaurante" placeholder="123456789" pattern="[0-9]{9}" required>
+                    <small>Debe contener 9 dígitos.</small>
+                    
+                    <label for="direccionRestaurante">Dirección del Restaurante:</label>
+                    <input type="text" id="direccionRestaurante" name="direccionRestaurante" placeholder="Calle, número, ciudad" required>
+                </form>
+            </div>
+        </div>
+
+        <!-- Botón de envío debajo de las tarjetas -->
+        <div class="button-container">
+            <button type="submit" form="registerForm">Registrar</button>
+        </div>
     </div>
+
+    <p id="registerErrorMessage" class="error-message"></p>
 
     <script src="/js/registro.js"></script>
 </body>

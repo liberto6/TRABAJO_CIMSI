@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    // Cargar empleados al inicio
     cargarEmpleados();
+
+    // Manejador para el botón de volver
+    document.getElementById('volverEncargados').addEventListener('click', () => {
+        window.location.href = '/encargado'; // Redirigir a la página principal de encargados
+    });
 
     // Manejador para añadir un empleado
     document.getElementById('addEmployeeForm').addEventListener('submit', async (event) => {

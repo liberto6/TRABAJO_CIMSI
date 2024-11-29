@@ -67,3 +67,27 @@ form button {
 form button:hover {
     background: #0056b3;
 }
+
+/* Estilo para el botón de volver */
+.boton-volver {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.boton-volver:hover {
+    background-color: #0056b3;
+}
+
+.boton-volver i {
+    margin-right: 8px;
+}

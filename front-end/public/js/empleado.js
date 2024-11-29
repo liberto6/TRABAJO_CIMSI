@@ -54,49 +54,58 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Agregar productos a la comanda con opción de eliminar
             botonesProducto.forEach((boton) => {
-                boton.addEventListener("click", () => {
-                    const nombre = boton.dataset.nombre;
-                    const precio = parseFloat(boton.dataset.precio);
+    boton.addEventListener("click", () => {
+        const id = boton.dataset.id;
+        const nombre = boton.dataset.nombre;
+        const precio = parseFloat(boton.dataset.precio);
 
-                    if (!isNaN(precio)) {
-                        const listItem = document.createElement("li");
-                        listItem.textContent = `${nombre} - €${precio.toFixed(2)}`;
+        if (!isNaN(precio)) {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${nombre} - €${precio.toFixed(2)}`;
+            listItem.setAttribute("data-id", id); // Asignar el ID del producto al elemento
 
-                        // Agregar botón para quitar producto
-                        const removeButton = document.createElement("button");
-                        removeButton.textContent = "Quitar";
-                        removeButton.style.marginLeft = "10px";
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Quitar";
+            removeButton.style.marginLeft = "10px";
 
-                        // Evento para quitar producto de la comanda
-                        removeButton.addEventListener("click", () => {
-                            listItem.remove();
-                        });
-
-                        listItem.appendChild(removeButton);
-                        comandaLista.appendChild(listItem);
-                    } else {
-                        console.error("Precio no válido para el producto:", nombre);
-                    }
-                });
+            removeButton.addEventListener("click", () => {
+                listItem.remove();
             });
+
+            listItem.appendChild(removeButton);
+            comandaLista.appendChild(listItem);
+        } else {
+            console.error("Precio no válido para el producto:", nombre);
+        }
+    });
+});
+
 
             // Procesar pedido
             finalizarPedidoBtn.addEventListener("click", async () => {
+                // Obtener los productos seleccionados en la comanda
                 const items = Array.from(comandaLista.children).map((item) => {
-                    const [nombre] = item.textContent.split(" - €");
-                    const producto = productos.find((p) => p.nombre === nombre);
-                    return { id_producto: producto.id_producto, cantidad: 1 }; // Cambiado a `id_producto`
-                });
+                    const idProducto = item.getAttribute("data-id");
+                    if (!idProducto) {
+                        console.error("ID de producto no encontrado en la comanda:", item);
+                        return null;
+                    }
+                    return { id: parseInt(idProducto), cantidad: 1 };
+                }).filter(item => item !== null); // Filtrar productos válidos
+            
                 if (items.length > 0) {
+                    console.log("Datos enviados al backend:", items); // Depuración de los datos enviados
+            
                     try {
                         const response = await fetch('/empleado/procesar-pedido', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ productos: items }),
                         });
+            
                         if (response.ok) {
                             const result = await response.json();
-                            alert(`Pedido procesado correctamente. ID: ${result.pedidoId}`);
+                            alert(`Pedido procesado correctamente. ID del pedido: ${result.pedidoId}`);
                             contenido.innerHTML = "<p>Pedido enviado correctamente.</p>";
                         } else {
                             const error = await response.json();
@@ -110,6 +119,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     alert("No hay productos en la comanda.");
                 }
             });
+            
+            
         } catch (error) {
             console.error("Error al obtener productos:", error);
             contenido.innerHTML = "<p>Error al cargar los productos.</p>";

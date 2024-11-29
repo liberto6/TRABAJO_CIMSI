@@ -1,240 +1,159 @@
-/* Estructura General */
+/* Importar Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* General */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f8fb;
+    margin: 0;
     display: flex;
-    flex-direction: column; /* Cambiamos a columna para alinear el título y la tarjeta */
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-/* Título fuera de la tarjeta */
-header h1 {
-    font-size: 28px;
-    color: #333;
-    margin: 20px 0; /* Espaciado superior e inferior */
-    text-align: center;
-}
-
-/* Botón de "Cerrar Sesión" fuera de la tarjeta */
-header {
-    position: relative; /* Para posicionar el botón dentro del header */
-    width: 100%; /* Ocupa todo el ancho */
-}
-
-.boton-salida {
-    position: absolute; /* Posiciona el botón en la esquina superior derecha */
-    top: 10px;
-    right: 10px;
-    padding: 8px 12px;
-    font-size: 14px;
-    color: #fff;
-    background-color: #dc3545;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.boton-salida:hover {
-    background-color: #b02a37;
-}
-
-/* Contenedor principal */
-.container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    text-align: center;
-}
-
-/* Menú inferior */
-#menu {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-/* Botones principales */
-#menu button {
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-#menu button:hover {
-    background-color: #0056b3;
-}
-
-/* Contenido dinámico */
-#contenido {
-    margin-top: 20px;
-    padding: 10px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: center;
-}
-
-/* Desplegable */
-.desplegable {
-    display: none; /* Ocultamos por defecto */
-    margin-top: 10px;
-}
-
-.desplegable.active {
-    display: block; /* Mostramos cuando está activo */
-}
-/* Botones de productos */
-#productos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     justify-content: center;
-    margin-top: 20px;
+    min-height: 100vh;
 }
-
-#productos .producto {
+/* Header */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #3573b1; /* Color de fondo */
+    z-index: 1000; /* Asegurarse de que esté sobre otros elementos */
     padding: 10px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Agregar sombra */
+}
+main {
+    margin-top: 70px; /* Ajustar el contenido para no superponerse con el header */
 }
 
-#productos .producto:hover {
-    background-color: #218838;
-}
-
-/* Sección de la comanda */
-#comanda {
-    margin-top: 20px;
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
     text-align: center;
 }
 
-#comanda h4 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-#comanda ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background: #f9f9f9;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-#comanda ul li {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-}
-
-#comanda ul li:last-child {
-    border-bottom: none;
-}
-
-#finalizarPedido {
-    margin-top: 10px;
+/* Botón de cerrar sesión */
+header .boton-salida {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     padding: 10px 20px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#finalizarPedido:hover {
-    background-color: #0056b3;
-}
-.alerta {
-    background-color: #f8d7da; /* Fondo rojo claro */
-    color: #721c24;           /* Texto rojo oscuro */
-    padding: 15px;
-    margin-top: 10px;
-    border: 1px solid #f5c6cb; /* Borde rojo claro */
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-form {
-    width: 100%; /* Asegurar que use todo el ancho disponible */
-    max-width: 400px; /* Ancho máximo para mantener el diseño limpio */
-    margin: auto; /* Centrar el formulario */
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espaciado entre secciones del formulario */
-}
-
-
-form input {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-form button {
-    padding: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-form button:hover {
-    background-color: #218838;
-}
-
-.ingrediente {
-    display: flex;
-    flex-direction: column; /* Cambiar a disposición vertical */
-    gap: 5px; /* Espaciado entre los campos */
-    align-items: flex-start; /* Alinear al inicio del contenedor */
-    margin-bottom: 10px; /* Espaciado inferior entre los ingredientes */
-}
-
-.ingrediente button {
-    align-self: flex-end; /* Alinear al final */
-    background-color: #28a745; /* Color verde */
+    background-color: #36b9cc;
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 14px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.ingrediente button:hover {
-    background-color: #218838;
+header .boton-salida:hover {
+    background-color: #2c9faf;
+    transform: translateY(-50%) scale(1.05);
 }
-#listaIngredientes {
+/* Contenedor Principal */
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 900px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Botones */
+
+button {
+    padding: 12px 20px;
+    margin: 5px;
+    background-color: #4e73df; /* Mismo color que la cabecera */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover para botones */
+button:hover {
+    background-color: #3b5bb5; /* Tonalidad más oscura para hover */
+    transform: scale(1.05);
+}
+
+
+button.gestion {
+    background-color: #36b9cc;
+}
+
+button.gestion:hover {
+    background-color: #2c9faf;
+}
+
+button.nuevo {
+    background-color: #1cc88a;
+}
+
+button.nuevo:hover {
+    background-color: #17a673;
+}
+
+/* Distribución de Botones */
+#menu {
     display: flex;
-    flex-direction: column; /* Alinear los ingredientes uno debajo del otro */
-    gap: 10px; /* Espaciado entre ingredientes */
-    width: 100%; /* Usar todo el ancho del contenedor */
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.menu-izquierda, .menu-derecha {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Alertas */
+.alerta {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.alerta--stock {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alerta--todo-ok {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Lista de Productos */
+#listaProductos {
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+#listaProductos li {
+    padding: 10px;
+    background: #f5f5f5;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
 }

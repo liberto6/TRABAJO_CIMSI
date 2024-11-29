@@ -3,30 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDA - Encargado</title> <!-- Título dinámico -->
-    <link rel="stylesheet" href="/css/stylesEncargados.css"> <!-- Ruta al CSS -->
+    <title>PDA - Encargado</title>
+    <link rel="stylesheet" href="/css/stylesEncargados.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Encabezado de la página -->
     <header>
-        <h1 id="tituloPagina">PDA - Encargado</h1> <!-- Título fuera de la tarjeta -->
-        <button id="cerrarSesion" class="boton-salida">Cerrar Sesión</button> <!-- Botón fuera de la tarjeta -->
+        <h1 id="tituloPagina">PDA - Encargado</h1>
+        <button id="cerrarSesion" class="boton-salida">Cerrar Sesión</button>
     </header>
+
     <div class="container">
         <main>
+            <!-- Menú de navegación -->
             <section id="menu">
-                <button id="nuevoPedido">Nuevo Pedido</button>
-                <button id="verPedidos">Ver Pedidos</button>
-                <button id="gestionarEmpleados">Gestionar Empleados</button>
-                <button id="añadirProducto">Añadir Producto Nuevo</button> <!-- Botón para añadir producto -->
-                <button id="modificarProducto">Modificar Productos</button>
-
+                <div class="menu-izquierda">
+                    <button id="gestionarEmpleados" class="gestion">
+                        <i class="fas fa-users"></i> Gestionar Empleados
+                    </button>
+                    <button id="verPedidos" class="gestion">
+                        <i class="fas fa-file-alt"></i> Ver Pedidos
+                    </button>
+                </div>
+                <div class="menu-derecha">
+                    <button id="nuevoPedido" class="nuevo">
+                        <i class="fas fa-plus-circle"></i> Nuevo Pedido
+                    </button>
+                    <button id="añadirProducto" class="nuevo">
+                        <i class="fas fa-cart-plus"></i> Añadir Producto Nuevo
+                    </button>
+                    <button id="modificarProducto" class="nuevo">
+                        <i class="fas fa-edit"></i> Modificar Productos
+                    </button>
+                </div>
             </section>
+            
+            <!-- Contenido principal dinámico -->
             <section id="contenido">
                 <p>Selecciona una opción para comenzar.</p>
-            </section>            
-            <div id="alertaStock" class="alerta"></div>
+            </section>
+
+            <!-- Alerta de stock bajo -->
+            <div id="alertaStock" class="alerta" style="display: none;"></div>
         </main>
     </div>
-    <script src="/js/encargado.js"></script> <!-- Ruta al JavaScript -->
+
+    <!-- Archivo JavaScript -->
+    <script src="/js/encargado.js"></script>
 </body>
 </html>
