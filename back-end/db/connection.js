@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 
 const db = mysql.createPool({
-    host: 'localhost',
+    host: 'db',
     user: 'Inventario', // Usuario de la base de datos
     password: 'inventario', // Contraseña de la base de datos
     database: 'inventario', // Nombre de la base de datos

@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Exponer el puerto de la aplicación
+    environment:
+      - DB_HOST=db
+      - DB_USER=inventario
+      - DB_PASSWORD=inventario
+      - DB_NAME=inventario
+    depends_on:
+      - db
+    volumes:
+      - .:/app # Opcional: Para desarrollo, sincroniza el código fuente
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: inventario
+      MYSQL_USER: inventario
+      MYSQL_PASSWORD: inventario
+    ports:
+      - "3306:3306" # Exponer el puerto MySQL
+    volumes:
+      - mysql_data:/var/lib/mysql # Persistencia de datos
+
+volumes:
+  mysql_data:
