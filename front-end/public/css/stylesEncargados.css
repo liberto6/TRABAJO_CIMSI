@@ -157,3 +157,19 @@ button.nuevo:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-size: 1rem;
 }
+#gestionarInventario {
+    margin: 10px 0;
+    background-color: #ff9800;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#gestionarInventario:hover {
+    background-color: #e68a00;
+}

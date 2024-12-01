@@ -8,6 +8,10 @@
         res.sendFile(path.join(__dirname, '../../front-end/private/encargado.html'));
     });
 
+    router.get('/gestion_inventario', (req, res) => {
+        res.sendFile(path.join(__dirname, '../../front-end/private/gestion_inventario.html'));
+    });
+
     // Ruta para la página de gestionar usuarios
     router.get('/gestion_empleado.html', isAuthenticated, (req, res) => {
         res.sendFile(path.join(__dirname, '../../front-end/private/gestion_empleado.html'));
@@ -28,6 +32,30 @@
             res.status(500).json({ message: 'Error al obtener los empleados' });
         }
     });
+
+    // Ruta para añadir un proveedor
+router.post('/proveedores', isAuthenticated, async (req, res) => {
+    const { nombre, correo, id_ingrediente } = req.body;
+    const idRestaurante = req.session.user.id_restaurante;
+
+    if (!nombre || !correo || !id_ingrediente) {
+        return res.status(400).json({ message: "Todos los campos son obligatorios." });
+    }
+
+    try {
+        await db.query(
+            `INSERT INTO proveedores (nombre, correo, id_ingrediente, id_restaurante)
+             VALUES (?, ?, ?, ?)`,
+            [nombre, correo, id_ingrediente, idRestaurante]
+        );
+
+        res.status(201).json({ message: "Proveedor añadido correctamente." });
+    } catch (error) {
+        console.error("Error al añadir proveedor:", error);
+        res.status(500).json({ message: "Error al añadir el proveedor." });
+    }
+});
+
 
     // Ruta para añadir empleados al restaurante del encargado
     router.post('/empleados', isAuthenticated, async (req, res) => {
@@ -241,8 +269,7 @@
         }
     });
     
-
-
+  
  // Ruta para añadir un nuevo producto con sus ingredientes
 // Ruta para añadir un nuevo producto con sus ingredientes
 router.post('/nuevo-producto', isAuthenticated, async (req, res) => {
@@ -518,6 +545,63 @@ router.delete('/producto/:id', isAuthenticated, async (req, res) => {
     } catch (error) {
         console.error('Error al eliminar producto:', error);
         res.status(500).json({ message: 'Error al eliminar el producto.' });
+    }
+});
+
+
+// Ruta para obtener ingredientes y sus proveedores
+router.get('/ingredientes-proveedores', isAuthenticated, async (req, res) => {
+    const idRestaurante = req.session.user.id_restaurante;
+
+    try {
+        const [ingredientes] = await db.query(
+            `SELECT id_ingrediente AS id, nombre, stock
+             FROM ingredientes
+             WHERE id_restaurante = ?`,
+            [idRestaurante]
+        );
+
+        const ingredientesConProveedores = await Promise.all(
+            ingredientes.map(async (ingrediente) => {
+                const [proveedores] = await db.query(
+                    `SELECT p.id_proveedor, p.nombre, p.correo
+                     FROM proveedores p
+                     WHERE p.id_ingrediente = ? AND p.id_restaurante = ?`,
+                    [ingrediente.id, idRestaurante]
+                );
+
+                return { ...ingrediente, proveedores };
+            })
+        );
+
+        res.json(ingredientesConProveedores);
+    } catch (error) {
+        console.error("Error al obtener ingredientes con proveedores:", error);
+        res.status(500).json({ message: "Error al cargar ingredientes y proveedores." });
+    }
+});
+
+
+// Ruta para registrar una compra
+router.post('/compras', isAuthenticated, async (req, res) => {
+    const { id_proveedor, id_ingrediente, cantidad } = req.body;
+    const idRestaurante = req.session.user.id_restaurante;
+
+    if (!id_proveedor || !id_ingrediente || !cantidad || cantidad <= 0) {
+        return res.status(400).json({ message: "Todos los campos son obligatorios y la cantidad debe ser mayor a 0." });
+    }
+
+    try {
+        await db.query(
+            `INSERT INTO compras (id_proveedor, id_ingrediente, cantidad, fecha, id_restaurante) 
+             VALUES (?, ?, ?, NOW(), ?)`,
+            [id_proveedor, id_ingrediente, cantidad, idRestaurante]
+        );
+
+        res.status(201).json({ message: "Compra registrada con éxito." });
+    } catch (error) {
+        console.error("Error al registrar compra:", error);
+        res.status(500).json({ message: "Error al registrar la compra." });
     }
 });
 

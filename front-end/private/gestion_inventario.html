@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Proveedores</title>
+    <link rel="stylesheet" href="/css/stylesGestion.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Gestión de Proveedores e Ingredientes</h1>
+        <button id="volverEncargado" class="btn volver-btn">Volver a Encargado</button>
+    </header>
+    <main class="main">
+        <section id="proveedores" class="section-proveedores">
+            <h2 class="section-title">Proveedores</h2>
+            <div id="proveedoresLista" class="proveedores-list">
+                <!-- Proveedores cargados dinámicamente -->
+            </div>
+            <button id="nuevoProveedor" class="btn agregar-btn">Añadir Proveedor</button>
+        </section>
+
+        <section id="ingredientes" class="section-ingredientes">
+            <h2 class="section-title">Ingredientes por Proveedor</h2>
+            <div id="ingredientesLista" class="ingredientes-list">
+                <!-- Ingredientes cargados dinámicamente -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para añadir/editar proveedores -->
+    <div id="modalProveedor" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalProveedorTitulo">Añadir Proveedor</h3>
+            <input type="text" id="nombreProveedor" placeholder="Nombre del proveedor" class="input-text">
+            <input type="email" id="correoProveedor" placeholder="Correo del proveedor" class="input-text">
+            <button id="guardarProveedor" class="btn confirmar-btn">Guardar</button>
+            <button id="cancelarProveedor" class="btn cancelar-btn">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal para comprar ingredientes -->
+    <div id="modalCompra" class="modal hidden">
+        <div class="modal-content">
+            <h3>Comprar Ingrediente</h3>
+            <p>¿Cuánto deseas comprar?</p>
+            <input type="number" id="cantidadCompra" min="1" value="1" class="input-cantidad">
+            <div class="modal-actions">
+                <button id="confirmarCompra" class="btn confirmar-btn">Confirmar</button>
+                <button id="cancelarCompra" class="btn cancelar-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/gestion_proveedores.js"></script>
+</body>
+</html>

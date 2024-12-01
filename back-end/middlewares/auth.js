@@ -1,6 +1,5 @@
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.user) {
-        console.log('Sesión actual:', req.session.user); // Registro de depuración
 
         const { role, id_restaurante } = req.session.user;
         const requestedPath = req.originalUrl;

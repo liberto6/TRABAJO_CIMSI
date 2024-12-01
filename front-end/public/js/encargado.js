@@ -93,6 +93,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Error al cargar productos:", error);
         }
     }
+    // Botón "Gestionar Inventario"
+        const gestionarInventarioBtn = document.createElement("button");
+        gestionarInventarioBtn.id = "gestionarInventario";
+        gestionarInventarioBtn.className = "gestion";
+        gestionarInventarioBtn.innerHTML = '<i class="fas fa-boxes"></i> Gestionar Inventario';
+
+        // Insertar el botón en el menú
+        const menuDerecha = document.querySelector(".menu-derecha");
+        menuDerecha.appendChild(gestionarInventarioBtn);
+
+        // Evento para redirigir a la página de gestión de inventario
+        gestionarInventarioBtn.addEventListener("click", () => {
+            window.location.href = "/encargado/gestion_inventario";
+        });
+        
+
 
     // Botón "Nuevo Pedido"
     nuevoPedidoBtn.addEventListener("click", async () => {
