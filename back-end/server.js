@@ -38,8 +38,8 @@ const empleadoRoutes = require('./routes/empleado'); // Importar la ruta de empl
 app.use('/empleado', empleadoRoutes); // Registrar la ruta de empleado
 
 const inventarioRoutes = require("./routes/inventario");
-
 app.use("/inventario", inventarioRoutes);
+
 
 
 // Escucha en el puerto

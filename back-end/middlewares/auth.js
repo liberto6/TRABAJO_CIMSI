@@ -1,6 +1,5 @@
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.user) {
-
         const { role, id_restaurante } = req.session.user;
         const requestedPath = req.originalUrl;
 
@@ -8,8 +7,12 @@ function isAuthenticated(req, res, next) {
             return res.status(403).send('Acceso prohibido: Usuario no está asociado a un restaurante.');
         }
 
-        if ((requestedPath.startsWith('/empleado') && role === 'empleado') ||
-            (requestedPath.startsWith('/encargado') && role === 'encargado')) {
+        // Añadir verificación para inventario
+        if (
+            (requestedPath.startsWith('/empleado') && role === 'empleado') ||
+            (requestedPath.startsWith('/encargado') && role === 'encargado') ||
+            (requestedPath.startsWith('/inventario') && role === 'encargado')
+        ) {
             return next();
         }
 

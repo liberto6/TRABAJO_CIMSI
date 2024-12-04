@@ -3,55 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Proveedores</title>
-    <link rel="stylesheet" href="/css/stylesGestion.css">
+    <title>Gestión de Inventario</title>
+    <link rel="stylesheet" href="/css/stylesGestionInventario.css">
 </head>
 <body>
-    <header class="header">
-        <h1>Gestión de Proveedores e Ingredientes</h1>
-        <button id="volverEncargado" class="btn volver-btn">Volver a Encargado</button>
+    <header>
+        <h1>Gestión de Inventario</h1>
     </header>
-    <main class="main">
-        <section id="proveedores" class="section-proveedores">
-            <h2 class="section-title">Proveedores</h2>
-            <div id="proveedoresLista" class="proveedores-list">
-                <!-- Proveedores cargados dinámicamente -->
+    <main>
+        <!-- Botones de Navegación -->
+        <div class="gestion-button-group">
+            <div class="gestion-section">
+                <h2 class="section-title">Gestión de Proveedores</h2>
+                <button id="btnProveedores">Ver Proveedores</button>
             </div>
-            <button id="nuevoProveedor" class="btn agregar-btn">Añadir Proveedor</button>
+            <div class="gestion-section">
+                <h2 class="section-title">Gestión de Ingredientes</h2>
+                <button id="btnIngredientes">Ver Ingredientes</button>
+            </div>
+        </div>
+
+        <!-- Sección de Gestión de Proveedores -->
+        <section id="listaProveedores" style="display: none;">
+            <h2 class="section-title">Gestión de Proveedores</h2>
+            <div class="form-container">
+                <h3>Añadir Nuevo Proveedor</h3>
+                <form id="formAgregarProveedor">
+                    <label for="nombreProveedor">Nombre del Proveedor:</label>
+                    <input type="text" id="nombreProveedor" placeholder="Nombre del proveedor" required>
+
+                    <label for="correoProveedor">Correo Electrónico:</label>
+                    <input type="email" id="correoProveedor" placeholder="Correo electrónico" required>
+
+                    <label for="ingrediente">Ingrediente que Vende:</label>
+                    <select id="ingrediente" required>
+                        <!-- Opciones dinámicas cargadas desde el servidor -->
+                    </select>
+
+                    <button type="submit">Añadir Proveedor</button>
+                </form>
+            </div>
+            <div class="list-container">
+                <h3>Proveedores Registrados</h3>
+                <div id="proveedoresCards">
+                    <!-- Aquí se cargarán dinámicamente los proveedores -->
+                </div>
+            </div>
         </section>
 
-        <section id="ingredientes" class="section-ingredientes">
-            <h2 class="section-title">Ingredientes por Proveedor</h2>
-            <div id="ingredientesLista" class="ingredientes-list">
-                <!-- Ingredientes cargados dinámicamente -->
+        <!-- Sección de Gestión de Ingredientes -->
+        <section id="listaIngredientes" style="display: none;">
+            <h2 class="section-title">Gestión de Ingredientes</h2>
+            <div class="list-container">
+                <h3>Ingredientes Disponibles</h3>
+                <div id="ingredientesCards">
+                    <!-- Aquí se cargarán dinámicamente los ingredientes -->
+                </div>
             </div>
         </section>
+
+        <!-- Modal de Compra -->
+        <div id="modalCompra" class="modal">
+            <div class="modal-content">
+                <span id="closeModal" class="close">&times;</span>
+                <h3>Realizar Compra</h3>
+                <form id="formCompra">
+                    <label for="cantidadCompra">Cantidad:</label>
+                    <input type="number" id="cantidadCompra" placeholder="Cantidad a comprar" required>                    
+        
+                    <label for="asuntoCompra">Asunto:</label>
+                    <input type="text" id="asuntoCompra" readonly>
+        
+                    <label for="mensajeCompra">Mensaje:</label>
+                    <textarea id="mensajeCompra" readonly style="resize: none; height: 100px; width: 100%;"></textarea>
+        
+                    <button type="submit">Enviar Pedido</button>
+                </form>
+            </div>
+        </div>
+        
+        
     </main>
-
-    <!-- Modal para añadir/editar proveedores -->
-    <div id="modalProveedor" class="modal hidden">
-        <div class="modal-content">
-            <h3 id="modalProveedorTitulo">Añadir Proveedor</h3>
-            <input type="text" id="nombreProveedor" placeholder="Nombre del proveedor" class="input-text">
-            <input type="email" id="correoProveedor" placeholder="Correo del proveedor" class="input-text">
-            <button id="guardarProveedor" class="btn confirmar-btn">Guardar</button>
-            <button id="cancelarProveedor" class="btn cancelar-btn">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- Modal para comprar ingredientes -->
-    <div id="modalCompra" class="modal hidden">
-        <div class="modal-content">
-            <h3>Comprar Ingrediente</h3>
-            <p>¿Cuánto deseas comprar?</p>
-            <input type="number" id="cantidadCompra" min="1" value="1" class="input-cantidad">
-            <div class="modal-actions">
-                <button id="confirmarCompra" class="btn confirmar-btn">Confirmar</button>
-                <button id="cancelarCompra" class="btn cancelar-btn">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="/js/gestion_proveedores.js"></script>
+    <script src="/js/gestion_inventario.js"></script>
 </body>
 </html>
